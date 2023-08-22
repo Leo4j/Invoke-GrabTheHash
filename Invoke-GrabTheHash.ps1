@@ -172,14 +172,14 @@ CertificateTemplate = "$TemplateName"
 		
 		if(!($LastExitCode -eq 0))
 		{
-			throw "certreq -submit command failed"
+			Write-Host "certreq -submit command failed"
 		}
 
 		Invoke-Expression -Command "certreq -accept -q $CN.cer" >$null 2>&1
 
 		if(!($LastExitCode -eq 0))
 		{
-			throw "certreq -accept command failed"
+			Write-Host "certreq -accept command failed"
 		}
 
 		if(($LastExitCode -eq 0) -and ($? -eq $true))
@@ -187,7 +187,7 @@ CertificateTemplate = "$TemplateName"
 		
 		else
 		{
-			throw "Request failed with unkown error"
+			Write-Host "Request failed with unkown error"
 		}
 
 		$cert = Get-Childitem "cert:\CurrentUser\My" | where-object {$_.Thumbprint -eq (New-Object System.Security.Cryptography.X509Certificates.X509Certificate2((Get-Item "$CN.cer").FullName,"")).Thumbprint}
