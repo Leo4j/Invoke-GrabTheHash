@@ -1,7 +1,26 @@
 <#
 .SYNOPSIS
+Invoke-GrabTheHash Author: Rob LP (@L3o4j)
+https://github.com/Leo4j/Invoke-GrabTheHash
+
+.DESCRIPTION
 Requests a certificate from a Windows Certificate Authority (CA) for the Current Session User's TGT,
 uses PKINIT to obtain a TGT for the same user, then performs the UnPAC-the-Hash technique to extract the User's NTLM hash
+
+.PARAMETER Domain
+Specify the target domain
+
+.PARAMETER CertTemplates
+Enumerate for Certificate Templates
+
+.PARAMETER TemplateName
+Specify a Certificate Template to use
+
+.PARAMETER CAName
+Specify the Certificate Authority Name
+
+.PARAMETER CN
+Specify the Account Client Name
 #>
 
 function Invoke-GrabTheHash
