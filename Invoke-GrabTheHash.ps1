@@ -39,29 +39,38 @@ function Invoke-GrabTheHash
 	Write-Host "Domain switch not provided. Target Domain will be set to: $currentDomain"
 
  	if($CertTemplates){
-  		$domainDistinguishedName = "DC=" + ($currentDomain -replace "\.", ",DC=")
-  		$ldapConnection = New-Object System.DirectoryServices.DirectoryEntry
-		$ldapConnection.Path = "LDAP://CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,$domainDistinguishedName"
-		$ldapConnection.AuthenticationType = "None"
-		
-		$searcher = New-Object System.DirectoryServices.DirectorySearcher
-		$searcher.SearchRoot = $ldapConnection
-		$searcher.Filter = "(objectClass=pKICertificateTemplate)"
-		$searcher.SearchScope = "Subtree"
-		
-		$results = $searcher.FindAll()
 
-  		Write-Host "Template Names:"
-		
-		foreach ($result in $results) {
-		    $templateName = $result.Properties["name"][0]
-		    Write-Host "$templateName"
+		Write-Host "Template Names:"
+
+  		try{
+  
+	  		$domainDistinguishedName = "DC=" + ($currentDomain -replace "\.", ",DC=")
+	  		$ldapConnection = New-Object System.DirectoryServices.DirectoryEntry
+			$ldapConnection.Path = "LDAP://CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,$domainDistinguishedName"
+			$ldapConnection.AuthenticationType = "None"
+			
+			$searcher = New-Object System.DirectoryServices.DirectorySearcher
+			$searcher.SearchRoot = $ldapConnection
+			$searcher.Filter = "(objectClass=pKICertificateTemplate)"
+			$searcher.SearchScope = "Subtree"
+			
+			$results = $searcher.FindAll()
+			
+			foreach ($result in $results) {
+			    $templateName = $result.Properties["name"][0]
+			    Write-Host "$templateName"
+			}
+			
+			# Dispose resources
+			$results.Dispose()
+			$searcher.Dispose()
+			$ldapConnection.Dispose()
+   		}
+
+     		catch{
+       			$AllTemplates = certutil -template
+	  		$AllTemplates -split "`n" | Where-Object { $_ -match 'TemplatePropCommonName' } | ForEach-Object { $_.Replace('TemplatePropCommonName = ', '').Trim() }
 		}
-		
-		# Dispose resources
-		$results.Dispose()
-		$searcher.Dispose()
-		$ldapConnection.Dispose()
 
   		break
 	}
