@@ -39,7 +39,7 @@ Invoke-GrabTheHash -CN <samaccountname>
 ```
 
 ### Provide a .pfx file
-You can also reuse a previously obtained .pfx to obtain the user hash
+You can also reuse a previously obtained .pfx to get the user hash
 
 Make sure you provide the full path to the .pfx file, as well as the CN and Domain information
 ```
