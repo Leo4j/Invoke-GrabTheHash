@@ -29,13 +29,17 @@ function Invoke-GrabTheHash
 		$currentDomain = $Domain
 	}
 	else{
+
+		Write-Host "Domain switch not provided. Enumerating the Domain Name..."
+  		Write-Host ""
+ 
 		try{
   			$currentDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()
 			$currentDomain = $currentDomain.Name
   		}
     		catch{$currentDomain = Get-WmiObject -Namespace root\cimv2 -Class Win32_ComputerSystem | Select Domain | Format-Table -HideTableHeaders | out-string | ForEach-Object { $_.Trim() }}
 
-		Write-Host "Domain switch not provided. Target Domain will be set to: $currentDomain"
+		Write-Host "Target Domain will be set to: $currentDomain"
   		Write-Host ""
 	}
 
