@@ -1,5 +1,7 @@
 # Invoke-GrabTheHash
-Requests a certificate from a Windows Certificate Authority (CA) for the Current Session User's TGT, uses PKINIT to obtain a TGT for the same user, then performs the UnPAC-the-Hash technique to extract the user's NTLM hash
+Requests a certificate from a Windows Certificate Authority (CA) for the Current Session User's TGT, uses PKINIT to obtain a TGT for the same user, then performs the UnPAC-the-Hash technique to extract the user's NTLM hash.
+
+This approach can be valuable in situations where an account's TGT has been compromised. Gaining access to the account hash allows for further actions such as cracking it to retrieve the user plain-text password, pass-the-hash attacks, or acquiring a new TGT if the existing one has expired.
 
 ### Run as follows
 ```
