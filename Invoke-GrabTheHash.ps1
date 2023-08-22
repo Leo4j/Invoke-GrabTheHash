@@ -52,7 +52,7 @@ function Invoke-GrabTheHash
 	}
 	else{
 
-		Write-Host "Domain switch not provided. Enumerating the Domain Name..."
+		Write-Host "[-] Domain switch not provided. Enumerating the Domain Name..."
 		Write-Host ""
  
 		try{
@@ -61,7 +61,7 @@ function Invoke-GrabTheHash
 		}
 		catch{$currentDomain = Get-WmiObject -Namespace root\cimv2 -Class Win32_ComputerSystem | Select Domain | Format-Table -HideTableHeaders | out-string | ForEach-Object { $_.Trim() }}
 
-		Write-Host "Target Domain will be set to: $currentDomain"
+		Write-Host "[+] Target Domain will be set to: $currentDomain"
 		Write-Host ""
 	}
 
