@@ -36,11 +36,13 @@ function Invoke-GrabTheHash
     		catch{$currentDomain = Get-WmiObject -Namespace root\cimv2 -Class Win32_ComputerSystem | Select Domain | Format-Table -HideTableHeaders | out-string | ForEach-Object { $_.Trim() }}
 
 		Write-Host "Domain switch not provided. Target Domain will be set to: $currentDomain"
+  		Write-Host "
 	}
 
  	if($CertTemplates){
 
-		Write-Host "Template Names:"
+		Write-Host "Certificate Templates:"
+  		Write-Host "
 
   		try{
   
