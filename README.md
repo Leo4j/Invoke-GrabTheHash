@@ -48,4 +48,5 @@ Invoke-GrabTheHash -PFX C:\Users\Senna\Downloads\Administrator.pfx -Domain ferra
 
 ### Example Output
 ![image](https://github.com/Leo4j/Invoke-GrabTheHash/assets/61951374/fcb77053-ebf9-4132-bbaf-8a576a6d08b1)
+
 ![image](https://github.com/Leo4j/Invoke-GrabTheHash/assets/61951374/2e887daf-865a-4813-9930-f32815ee653b)
