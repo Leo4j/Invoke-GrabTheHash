@@ -58,10 +58,12 @@ function Invoke-GrabTheHash
 			
 			$results = $searcher.FindAll()
 			
-			foreach ($result in $results) {
+			$AllTemplates = foreach ($result in $results) {
 			    $templateName = $result.Properties["name"][0]
 			    Write-Host "$templateName"
 			}
+
+   			$AllTemplates | Sort
 			
 			# Dispose resources
 			$results.Dispose()
@@ -71,7 +73,7 @@ function Invoke-GrabTheHash
 
      		catch{
        			$AllTemplates = certutil -template
-	  		$AllTemplates -split "`n" | Where-Object { $_ -match 'TemplatePropCommonName' } | ForEach-Object { $_.Replace('TemplatePropCommonName = ', '').Trim() }
+	  		$AllTemplates -split "`n" | Where-Object { $_ -match 'TemplatePropCommonName' } | ForEach-Object { $_.Replace('TemplatePropCommonName = ', '').Trim() } | Sort
 		}
 
   		break
