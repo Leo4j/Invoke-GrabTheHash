@@ -76,6 +76,8 @@ function Invoke-GrabTheHash
 	  		$AllTemplates -split "`n" | Where-Object { $_ -match 'TemplatePropCommonName' } | ForEach-Object { $_.Replace('TemplatePropCommonName = ', '').Trim() } | Sort
 		}
 
+  		Write-Host ""
+
   		break
 	}
 	
