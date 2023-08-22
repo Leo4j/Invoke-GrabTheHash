@@ -13,7 +13,7 @@ Invoke-GrabTheHash
 
 ### Specify a target Domain
 ```
-Invoke-GrabTheHash -Domain domain.local
+Invoke-GrabTheHash -Domain ferrari.local
 ```
 
 ### Enumerate for Certificate Templates
@@ -29,7 +29,7 @@ Invoke-GrabTheHash -TemplateName User
 
 ### Specify the CA Name
 ```
-Invoke-GrabTheHash -CAName "CA01.domain.local\domain-CA01-CA"
+Invoke-GrabTheHash -CAName "CA01.ferrari.local\ferrari-CA01-CA"
 ```
 
 ### Specify the Account Client Name
