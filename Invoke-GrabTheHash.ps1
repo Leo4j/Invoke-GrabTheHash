@@ -141,9 +141,7 @@ function Invoke-GrabTheHash
 	if($PSBoundParameters['Debug']){$DebugPreference = "Continue"}
 	
 	Write-Host "Requesting certificate with subject $CN"
-	Write-Debug "Parameter values: CN = $CN, TemplateName = $TemplateName, CAName = $CAName"
 	
-	Write-Verbose "Generating request inf file"
 	$file = @"
 [NewRequest]
 Subject = "CN=$CN"
