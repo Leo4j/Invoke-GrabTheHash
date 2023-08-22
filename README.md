@@ -13,7 +13,7 @@ Invoke-GrabTheHash
 
 ### Specify a target Domain
 ```
-Invoke-GrabTheHash -Domain <domain.name>
+Invoke-GrabTheHash -Domain domain.local
 ```
 
 ### Enumerate for Certificate Templates
@@ -24,7 +24,7 @@ Invoke-GrabTheHash -CertTemplates
 ### Specify a Certificate Template to use
 By default, the "User" template is used to request a certificate
 ```
-Invoke-GrabTheHash -TemplateName <template_name>
+Invoke-GrabTheHash -TemplateName User
 ```
 
 ### Specify the CA Name
@@ -32,10 +32,10 @@ Invoke-GrabTheHash -TemplateName <template_name>
 Invoke-GrabTheHash -CAName "CA01.domain.local\domain-CA01-CA"
 ```
 
-### Specify the User Account Name
+### Specify the Account Client Name
 This must correspond to the TGT Client Name in your current session
 ```
-Invoke-GrabTheHash -CN <samaccountname>
+Invoke-GrabTheHash -CN Administrator
 ```
 
 ### Provide a .pfx file
