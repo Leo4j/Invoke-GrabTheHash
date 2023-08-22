@@ -31,7 +31,7 @@ Invoke-GrabTheHash -CAName "CA01.domain.local\domain-CA01-CA"
 ```
 
 ### Specify the User Account Name
-This must correspond to the TGT Account Name in your current session
+This must correspond to the TGT Client Name in your current session
 ```
 Invoke-GrabTheHash -CN <samaccountname>
 ```
