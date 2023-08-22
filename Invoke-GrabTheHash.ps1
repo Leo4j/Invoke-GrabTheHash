@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
-Requests a certificate from a Windows Certificate Authority (CA) on behalf of the user for whom a Ticket Granting Ticket (TGT) is held in the current session, uses PKINIT to obtain a TGT for the same user, then performs the UnPAC the Hash technique to extract the user's NTLM hash
+Requests a certificate from a Windows Certificate Authority (CA) for the Current Session User's TGT,
+uses PKINIT to obtain a TGT for the same user, then performs the UnPAC-the-Hash technique to extract the User's NTLM hash
 #>
 
 function Invoke-GrabTheHash
