@@ -38,3 +38,4 @@ Invoke-GrabTheHash -CN <samaccountname>
 
 ### Example Output
 ![image](https://github.com/Leo4j/Invoke-GrabTheHash/assets/61951374/fcb77053-ebf9-4132-bbaf-8a576a6d08b1)
+![image](https://github.com/Leo4j/Invoke-GrabTheHash/assets/61951374/77d38f85-130f-4890-87ee-e9373b2c56ec)
