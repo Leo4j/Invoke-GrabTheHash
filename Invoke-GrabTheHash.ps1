@@ -86,7 +86,7 @@ function Invoke-GrabTheHash
 			
 			$AllTemplates = foreach ($result in $results) {
 				$templateName = $result.Properties["name"][0]
-				Write-Host "$templateName"
+				$templateName
 			}
 
 			$AllTemplates | Sort
