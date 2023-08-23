@@ -43,6 +43,9 @@ Make sure you run on an elevated context or it will fail
 ```
 Invoke-GrabTheHash -Machine
 ```
+```
+Invoke-GrabTheHash -Machine -TemplateName DomainController
+```
 
 ### Provide a .pfx file
 You can also reuse a previously obtained .pfx to get the user hash
