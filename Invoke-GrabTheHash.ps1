@@ -84,7 +84,7 @@ function Invoke-GrabTheHash
 
  	if($CertTemplates){
 
-		Write-Host "Certificate Templates:"
+		Write-Host "[+] Certificate Templates:"
 		Write-Host ""
 
 		try{
@@ -107,6 +107,24 @@ function Invoke-GrabTheHash
 			}
 
 			$AllTemplates | Sort
+
+   			Write-Host ""
+			Write-Host "[+] Certificates that permit client authentication:"
+			Write-Host ""
+			
+			$searcher.Filter = "(&(objectClass=pKICertificateTemplate)(pkiExtendedKeyUsage=1.3.6.1.5.5.7.3.2))"
+			$searcher.SearchScope = "Subtree"
+
+			$results = $searcher.FindAll()
+
+			$ClientAuthTemplates = foreach ($result in $results) {
+				if($result.Properties["pkiextendedkeyusage"] -contains "1.3.6.1.5.5.7.3.2") {
+					$templateName = $result.Properties["name"][0]
+					$templateName
+				}
+			}
+
+			$ClientAuthTemplates | Sort
 			
 			# Dispose resources
 			$results.Dispose()
