@@ -31,6 +31,9 @@ Upload .pfx file to a server
 .PARAMETER Machine
 Work with Machine Accounts TGTs and Certificates (needs to run in elevated context)
 
+.PARAMETER DC
+If working with a DC Machine Account (-Machine switch is needed)
+
 .PARAMETER Break
 Stop before grabbing the Hash
 #>
@@ -57,7 +60,9 @@ function Invoke-GrabTheHash
 		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
 		[switch]$Machine,
   		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
-		[switch]$Break
+		[switch]$Break,
+  		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
+		[switch]$DC
 	)
 	
 	$ErrorActionPreference = "SilentlyContinue"
@@ -185,7 +190,10 @@ function Invoke-GrabTheHash
 	
 	if($Machine){
 		if($TemplateName){}
-		else{$TemplateName = "Machine"}
+		else{
+  			if($DC){$TemplateName = "DomainController"}
+  			else{$TemplateName = "Machine"}
+     		}
 	}
 	
 	else{$TemplateName = "User"}
