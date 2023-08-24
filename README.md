@@ -43,8 +43,10 @@ Make sure you run on an elevated context or it will fail
 ```
 Invoke-GrabTheHash -Machine
 ```
+
+### If working with a DC Machine Account
 ```
-Invoke-GrabTheHash -Machine -TemplateName DomainController
+Invoke-GrabTheHash -Machine -DC
 ```
 
 ### Upload the .pfx file to a server
