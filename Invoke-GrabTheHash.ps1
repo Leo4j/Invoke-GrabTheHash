@@ -330,7 +330,7 @@ CertificateTemplate = "$TemplateName"
 	$certbytes = $cert.export([System.Security.Cryptography.X509Certificates.X509ContentType]::pfx)
 
 	$certbytes | Set-Content -Encoding Byte -Path "$CN.pfx" -ea Stop
-	Write-Output "[+] Certificate successfully exported to $CN.pfx"
+	Write-Output "[+] Certificate successfully exported to $pwd\$CN.pfx"
 	Write-Output ""
 	
 	if($Machine){$certstore = new-object system.security.cryptography.x509certificates.x509Store('My', 'LocalMachine')}
